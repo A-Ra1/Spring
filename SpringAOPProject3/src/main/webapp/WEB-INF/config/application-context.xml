@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+	<!-- 어노테이션이 있는 클래스 메모리 할당 -->
+	<context:component-scan base-package="com.sist.*"/>
+	<!-- 데이터베이스 정보를 마이바티스로 전송
+		1. 정보를 모아서 처리 => BasicDataSource -->
+	<bean id="ds" class="org.apache.commons.dbcp.BasicDataSource"
+		p:driverClassName="oracle.jdbc.driver.OracleDriver"
+		p:url="jdbc:oracle:thin:@localhost:1521:XE"
+		p:username="hr"
+		p:password="happy"
+	/>	
+	<bean id="ssf"
+		class="org.mybatis.spring.SqlSessionFactoryBean"
+		p:dataSource-ref="ds"
+	/>
+	<aop:aspectj-autoproxy/>
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager"
+		p:dataSource-ref="ds"
+	/>
+	<!-- <tx:jta-transaction-manager/> -->
+	<bean id="mapper1"
+		class="org.mybatis.spring.mapper.MapperFactoryBean"
+		p:mapperInterface="com.sist.dao.BoardMapper"
+		p:sqlSessionFactory-ref="ssf"
+	/>
+	<bean id="mapper2"
+		class="org.mybatis.spring.mapper.MapperFactoryBean"
+		p:mapperInterface="com.sist.dao.MemberMapper"
+		p:sqlSessionFactory-ref="ssf"
+	/>
+	<bean id="mapper3"
+		class="org.mybatis.spring.mapper.MapperFactoryBean"
+		p:mapperInterface="com.sist.dao.RecipeMapper"
+		p:sqlSessionFactory-ref="ssf"
+	/>
+	<mvc:annotation-driven>
+    <mvc:message-converters>
+        <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+            <property name="supportedMediaTypes">
+                <list>
+                    <value>text/html;charset=UTF-8</value>
+                </list>
+            </property>
+        </bean>
+    </mvc:message-converters>
+	</mvc:annotation-driven>
+	<!-- ViewResolver -->
+	<bean id="viewResolver"
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver"
+		p:prefix="/"
+		p:suffix=".jsp"
+	/>	
+
+</beans>
