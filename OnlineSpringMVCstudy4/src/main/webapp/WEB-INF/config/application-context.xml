@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+<!-- 
+	1. 사용자 정의 클래스 등록 = <bean> : 클래스 한개씩 등록시 사용 (DI) setter 메소드에 값을 첨부할 시
+					 	  <context:component-scan> 클래스를 패키지 단위로 등록 (DI 사용이 어렵다)
+					 	  						    반드시 annotation을 이용해서 처리
+	2. 반복적인 코딩이 있는 경우엔 반복코딩 제거 (AOP) : 공통모듈을 등록한다
+	3. db 관련
+	 3-1. 데이터베이스의 정보를 모은다 (Datasource 클래스)
+	 	  ============== driver, username, password, url
+	 3-2. Trasaction 처리
+	 3-3. Mybatis의 SqlSessionFactory 설정 => getConnection, disConnection
+	 3-4. 인터페이스를 구현하는 클래스를 등록한다 (MapperFactoryBean)
+	4. 몽고디비 사용시 등록
+	5. 보안설정
+	6. websocket 등록  	   		
+	7. viewResolver, Tiles 등록		 	  						    
+ -->
+ <!-- 사용자 정의 클래스 -->
+  <context:component-scan base-package="com.sist.*"/>
+ <!-- db 관련 -->
+ <!-- 데이터베이스의 정보를 모은다 -->
+ <bean id="ds" class="org.apache.commons.dbcp.BasicDataSource" 
+  p:driverClassName="oracle.jdbc.driver.OracleDriver"
+  p:url="jdbc:oracle:thin:@211.238.142.199:1521:XE"
+  p:username="hr"
+  p:password="happy"
+  p:maxActive="20"
+  p:maxIdle="10"
+  p:maxWait="-1" 
+ />
+ <!-- p:maxWait="-1" 반환시까지 기다린다 (무제한) -->
+ <!-- SqlSessionFactory 처리  -->
+ <bean id="ssf" class="org.mybatis.spring.SqlSessionFactoryBean"
+  p:dataSource-ref="ds"
+ />
+ <!-- Mapper(인터페이스) 구현 -->
+ <bean id="mapper" class="org.mybatis.spring.mapper.MapperFactoryBean"
+  p:sqlSessionFactory-ref="ssf"
+  p:mapperInterface="com.sist.dao.RecipeMapper"
+ />
+ <!-- jsp 찾기 ViewResolver -->
+ <!-- 
+ 	 SpringMVC 동작 순서
+ 	 1. (주문) 사용자 요청 (.do) 
+ 	 2. (서빙) DispatcherServlet : 요청을 받는다
+ 	 3. 요청처리 Model (@Controller) : 요청처리하는 메소드를 찾는다 (HandlerMapping : @Controller가 올라와 있는 것 중에서 찾기때문에 경로명, 확장자 넘길 필요 X)
+ 	 4. Model => 해당 메소드 호출 => invoke()
+ 	 5. 결과값 (request, session) 전송
+ 	 6. 전송 => jsp를 찾아서 request 를 전송하는 클래스가 있다 => viewResolver
+ 	 												  ============ 경로명, 확장자를 넘겨야한다 
+  -->
+ <bean id="viewResolver"
+  	class="org.springframework.web.servlet.view.InternalResourceViewResolver"
+  	p:prefix="/"
+  	p:suffix=".jsp"
+  	/> 
+</beans>
