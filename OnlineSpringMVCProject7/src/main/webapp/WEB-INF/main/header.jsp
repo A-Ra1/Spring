@@ -22,7 +22,13 @@
                 </a>
               </li> 
               <li class="nav-item">
+                <a class="nav-link" data-toggle="modal" data-target="#myModal">로그인</a>
+              </li>
+              <li class="nav-item">
                 <a class="nav-link" href="../recipe/list.do">레시피</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="../recipe/chef_list.do">쉐프</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="../food/list.do">맛집</a>
@@ -31,10 +37,13 @@
                 <a class="nav-link" href="../board/list.do">커뮤니티</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="../recommend/list.do">추천</a>
+                <a class="nav-link" href="../recommand/list.do">추천</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="../news/list.do">뉴스</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="../chat/chat.do">챗봇</a>
               </li>
             </ul>
           </div>
